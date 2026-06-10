@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_PREFIX: ghcr.io/valerubio7/fraud-detection-system
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/fraud-detection-system
 
 jobs:
   build-and-push:
