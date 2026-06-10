@@ -280,8 +280,8 @@ class TestEvaluateDriftAction:
 
         assert action.severity == "WARNING"
         assert action.alert_triggered is True
-        assert action.trigger_retraining is False
-        assert action.remediation_action is None
+        assert action.trigger_retraining is True
+        assert action.remediation_action == "triggered_retraining_dag"
 
     def test_info_when_within_acceptable_bounds(self):
         """INFO: drift_score bajo y features críticas por debajo del umbral."""
