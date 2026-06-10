@@ -159,7 +159,7 @@ else
   else
     print_step "Generando 100.000 transacciones sintéticas (fraud rate 2%) en TimescaleDB..."
     print_warning "Esto puede tardar unos minutos..."
-    docker compose -f "${COMPOSE_FILE}" exec -T -w /opt/airflow/project airflow-scheduler \
+    docker compose -f "${COMPOSE_FILE}" exec -T -w //opt/airflow/project airflow-scheduler \
       python database/timescaledb/seeds/seed_transactions.py --count 100000 --fraud-rate 0.02
     print_success "100.000 transacciones insertadas en TimescaleDB"
   fi
@@ -172,7 +172,7 @@ else
   else
     print_step "Entrenando modelo XGBoost de detección de fraude..."
     print_warning "Incluye feature engineering y logging a MLflow. Puede tardar varios minutos..."
-    docker compose -f "${COMPOSE_FILE}" exec -T -w /opt/airflow/project airflow-scheduler \
+    docker compose -f "${COMPOSE_FILE}" exec -T -w //opt/airflow/project airflow-scheduler \
       python model/pipeline/train.py --output-dir /tmp/fraud_model
     print_success "Entrenamiento completado — modelo registrado en MLflow (stage: Staging)"
 
@@ -186,13 +186,13 @@ else
   # ── Quality gates + promoción ─────────────────────────────────────────────
   print_step "Ejecutando quality gates del modelo v${STAGING_VERSION} (F1 ≥ 0.85, AUC-ROC ≥ 0.90, latencia P99 ≤ 50ms)..."
   print_warning "Primer modelo: se promueve a Production independientemente del resultado."
-  docker compose -f "${COMPOSE_FILE}" exec -T -w /opt/airflow/project airflow-scheduler \
+  docker compose -f "${COMPOSE_FILE}" exec -T -w //opt/airflow/project airflow-scheduler \
     python model/pipeline/evaluate.py \
     --model-name FraudDetectionModel \
     --model-version "${STAGING_VERSION}" || true
 
   print_step "Promoviendo modelo v${STAGING_VERSION} a Production..."
-  docker compose -f "${COMPOSE_FILE}" exec -T -w /opt/airflow/project airflow-scheduler \
+  docker compose -f "${COMPOSE_FILE}" exec -T -w //opt/airflow/project airflow-scheduler \
     python model/pipeline/promote.py \
     --model-name FraudDetectionModel \
     --model-version "${STAGING_VERSION}"
