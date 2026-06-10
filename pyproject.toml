@@ -1,0 +1,139 @@
+[project]
+name = "fraud-detection-system"
+version = "0.1.0"
+description = "A fraud detection system."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[dependency-groups]
+serving = [
+  "asyncpg==0.31.0",
+  "fastapi==0.136.0",
+  "joblib==1.5.3",
+  "mlflow-skinny==2.17.2",
+  "numpy==2.4.4",
+  "pandas==2.3.3",
+  "prometheus-fastapi-instrumentator==7.1.0",
+  "psycopg2-binary==2.9.12",
+  "redis==5.3.1",
+  "scikit-learn==1.8.0",
+  "uvicorn[standard]==0.44.0",
+  "xgboost==2.1.4",
+]
+producer = [
+  "confluent-kafka==2.14.0",
+  "fastavro==1.12.1",
+]
+features = [
+  "confluent-kafka==2.14.0",
+  "fastavro==1.12.1",
+  "psycopg2-binary==2.9.12",
+  "redis==5.3.1",
+]
+inference = [
+  "confluent-kafka==2.14.0",
+  "fastavro==1.12.1",
+  "httpx==0.28.1",
+]
+notebooks = [
+  "ipykernel==6.31.0",
+  "jupyterlab==4.5.7",
+  "matplotlib==3.10.9",
+  "numpy==2.4.4",
+  "pandas==2.3.3",
+  "psycopg2-binary==2.9.12",
+  "python-dotenv==1.2.2",
+  "scikit-learn==1.8.0",
+  "seaborn==0.13.2",
+]
+airflow = [
+  "boruta==0.4.3",
+  "evidently==0.4.36",
+  "imbalanced-learn==0.14.1",
+  "joblib==1.5.3",
+  "matplotlib==3.10.9",
+  "mlflow==2.17.2",
+  "numpy==2.4.4",
+  "optuna==3.6.2",
+  "pandas==2.3.3",
+  "psycopg2-binary==2.9.12",
+  "pyarrow==17.0.0",
+  "scikit-learn==1.8.0",
+  "xgboost==2.1.4",
+]
+testing = [
+  "pytest==8.4.2",
+  "pytest-asyncio==0.26.0",
+  "httpx==0.28.1",
+  "numpy==2.4.4",
+  "fastapi==0.136.0",
+  "apache-airflow==2.11.0",
+  "evidently==0.4.36",
+  "testcontainers[kafka,postgres,redis]==4.13.3",
+  "locust==2.44.0",
+  "pytest-cov==5.0.0",
+  "pytest-timeout==2.4.0",
+  # required by integration tests (psycopg2/asyncpg are imported at module level
+  # in serving/app and streaming/features/transaction_store.py)
+  "asyncpg==0.31.0",
+  "psycopg2-binary==2.9.12",
+  "mlflow==2.17.2",
+  "xgboost==2.1.4",
+  "imbalanced-learn==0.14.1",
+  "confluent-kafka==2.14.0",
+  "fastavro==1.12.1",
+  "scikit-learn==1.8.0",
+  "pandas==2.3.3",
+  "joblib==1.5.3",
+  "redis==5.3.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+timeout = 300
+markers = [
+  "integration: marks tests as integration tests that require Docker (deselect with '-m not integration')",
+]
+
+[tool.coverage.run]
+source = ["serving", "streaming", "model", "offline_features", "mlops"]
+omit = ["*/tests/*", "*/migrations/*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+exclude = ["**/*.ipynb"]
+
+[tool.ruff.lint]
+select = [
+  "E",
+  "F",
+  "I",
+  "B",
+  "UP",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# /tmp paths are intentional in containerized environments
+"mlops/airflow/dags/*.py" = ["S108", "S603", "S607"]
+"mlops/evidently/*.py" = ["S108"]
+"mlops/mlflow/init_mlflow.py" = ["S310"]
+"serving/app/services/model_loader.py" = ["S108"]
+# random.Random is used for data simulation, not cryptography
+"streaming/producer/*.py" = ["S311"]
+"database/timescaledb/seeds/seed_transactions.py" = ["S311"]
+# parameterized query via pd.read_sql(..., params=), not a real injection risk
+"model/pipeline/evaluate.py" = ["S608"]
+# git call with trusted static args
+"model/pipeline/train.py" = ["S607", "S108"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
