@@ -156,3 +156,14 @@ run_sql_migrations_if_exists() {
 
   print_success "${label}: ${#migration_files[@]} migración(es) aplicada(s)"
 }
+
+
+# -------------------------------
+# Host Python detection
+# -------------------------------
+if command -v python3 >/dev/null 2>&1 && python3 -c "import sys" >/dev/null 2>&1; then
+  export PY_CMD="python3"
+else
+  export PY_CMD="python"
+fi
+

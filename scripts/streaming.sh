@@ -15,7 +15,7 @@ NUM_MERCHANTS=50
 DURATION=0
 
 # ── helpers ───────────────────────────────────────────────────────────────────
-fraud_rate_pct() { python3 -c "print(f\"{float('${FRAUD_RATE}') * 100:.0f}%\")"; }
+fraud_rate_pct() { "${PY_CMD}" -c "print(f\"{float('${FRAUD_RATE}') * 100:.0f}%\")"; }
 duration_label() { [[ "${DURATION}" -eq 0 ]] && printf "infinite" || printf "%ss" "${DURATION}"; }
 
 show_config() {
@@ -84,8 +84,8 @@ prompt_scenario() {
 prompt_fraud_rate() {
   printf "\nFraud rate as percentage (current: %s, e.g. 5 for 5%%): " "$(fraud_rate_pct)"
   read -r val
-  if [[ "${val}" =~ ^[0-9]+(\.[0-9]+)?$ ]] && python3 -c "exit(0 if 0 <= float('${val}') <= 100 else 1)" 2>/dev/null; then
-    FRAUD_RATE=$(python3 -c "print(float('${val}') / 100)")
+  if [[ "${val}" =~ ^[0-9]+(\.[0-9]+)?$ ]] && "${PY_CMD}" -c "exit(0 if 0 <= float('${val}') <= 100 else 1)" 2>/dev/null; then
+    FRAUD_RATE=$("${PY_CMD}" -c "print(float('${val}') / 100)")
   else
     print_warning "Invalid value (0–100), keeping $(fraud_rate_pct)"
   fi

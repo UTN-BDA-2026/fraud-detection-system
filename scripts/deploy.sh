@@ -133,7 +133,7 @@ _mlflow_version() {
   local stage="$1"
   curl -sS \
     "http://localhost:5000/api/2.0/mlflow/registered-models/get-latest-versions?name=FraudDetectionModel&stages=${stage}" | \
-    python3 -c "
+    "${PY_CMD}" -c "
 import sys, json
 d = json.load(sys.stdin)
 v = d.get('model_versions', [])
@@ -173,7 +173,7 @@ else
     print_step "Entrenando modelo XGBoost de detección de fraude..."
     print_warning "Incluye feature engineering y logging a MLflow. Puede tardar varios minutos..."
     docker compose -f "${COMPOSE_FILE}" exec -T -w //opt/airflow/project airflow-scheduler \
-      python model/pipeline/train.py --output-dir /tmp/fraud_model
+      python model/pipeline/train.py --output-dir //tmp/fraud_model
     print_success "Entrenamiento completado — modelo registrado en MLflow (stage: Staging)"
 
     STAGING_VERSION=$(_mlflow_version "Staging")
