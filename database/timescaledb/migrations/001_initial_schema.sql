@@ -30,7 +30,8 @@ BEGIN
         PERFORM create_hypertable(
             'public.transactions',
             'timestamp',
-            chunk_time_interval => INTERVAL '1 day'
+            chunk_time_interval => INTERVAL '1 day',
+            migrate_data => true
         );
     END IF;
 EXCEPTION
